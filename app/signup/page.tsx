@@ -1,22 +1,20 @@
-/* eslint-disable react/no-unescaped-entities */
-"use client"
 import Link from "next/link";
 import { useState } from "react";
 
-export default function Home() {
+export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+    // Handle signup logic here
   };
 
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-md p-8 space-y-8">
-        <h1 className="text-2xl font-bold text-center">Login</h1>
-        <form onSubmit={handleLogin} className="space-y-6">
+        <h1 className="text-2xl font-bold text-center">Sign Up</h1>
+        <form onSubmit={handleSignup} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium">
               Email address
@@ -47,15 +45,15 @@ export default function Home() {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white rounded"
+            className="w-full py-2 px-4 bg-green-600 text-white rounded"
           >
-            Sign In
+            Sign Up
           </button>
         </form>
         <p className="text-center">
-          Don't have an account?{" "}
-          <Link href="#" className="text-blue-600">
-            Sign up
+          Already have an account?{" "}
+          <Link href="/" className="text-green-600">
+            Login
           </Link>
         </p>
       </div>
