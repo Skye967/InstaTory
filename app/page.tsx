@@ -2,6 +2,7 @@
 "use client"
 import Link from "next/link";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -9,7 +10,18 @@ export default function Home() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (res?.ok) {
+      // Redirect to the dashboard or other protected page
+    } else {
+      // Handle login errors here
+    }
   };
 
   return (
@@ -54,7 +66,7 @@ export default function Home() {
         </form>
         <p className="text-center">
           Don't have an account?{" "}
-          <Link href="#" className="text-blue-600">
+          <Link href="/signup" className="text-blue-600">
             Sign up
           </Link>
         </p>
