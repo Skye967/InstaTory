@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -14,10 +15,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className="relative h-screen flex flex-col bg-gray-900">
+        <header className="bg-gray-800 text-white p-4 w-full">
+          <div className="container mx-auto flex justify-between items-center">
+            <h1 className="text-xl font-bold">Instatory</h1>
+            <div>
+              <Link href="/profile">Profile</Link>
+            </div>
+          </div>
+        </header>
+        <main className="h-full flex flex-col">{children}</main>
+        <footer className="bg-gray-800 text-white p-4 absolute bottom-0 w-full">
+          <div className="container mx-auto text-center">
+            <p>&copy; 2024 Instatory. All rights reserved.</p>
+            <Link href="/terms">Terms of Service</Link>
+          </div>
+        </footer>
+      </body>
     </html>
   );
 }

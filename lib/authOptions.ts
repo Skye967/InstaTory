@@ -1,5 +1,6 @@
-import NextAuth, { AuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
+import { AuthOptions, Profile } from 'next-auth';
+import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google';
+import AppleProvider from "next-auth/providers/apple";
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
@@ -13,7 +14,19 @@ export const authOptions: AuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          scope: "openid email profile",
+          response_type: "code"
+        }
+      },
     }),
+    // AppleProvider({
+    //   clientId: process.env.APPLE_CLIENT_ID!,
+    //   clientSecret: process.env.APPLE_CLIENT_SECRET!,
+    // }),
     CredentialsProvider({
       id: 'credentials',
       name: 'Credentials',
@@ -21,7 +34,7 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Missing credentials');
         }
@@ -50,10 +63,35 @@ export const authOptions: AuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
+    async signIn({ account, profile }) {
+      return true // Do different verification for other providers that don't have `email_verified`
+    },
+    async redirect({ url, baseUrl }) {
+      // Redirect to the login page or any other page
+      return baseUrl + '/auth/dashboard';
+    },
     async session({ session, token }) {
-      // session.user.id = token.sub;
+      let newSession = {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.sub,
+        },
+      };
+      if (token.account) {
+        return newSession
+      }
       return session;
     },
+    async jwt({ token, user, account}) {
+      if (user) {
+        token.user = user
+      }
+      if (account) {
+        token.account = account
+      }
+      return token
+    }
   },
 };
 
