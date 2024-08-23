@@ -1,34 +1,40 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from 'next/link';
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import userSession from "@/util/userSession";
+import CreateListFormModule from "@/components/CreateListFormModule";
+import getInventoryLists from "@/util/getInventoryLists";
+
+type User = { name?: string | null | undefined; email?: string | null | undefined; image?: string | null | undefined; id?: string | null | undefined; } | null
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User>(null);
+  const [inventoryLists, setInventoryLists] = useState<{
+    description: string; name: string
+  }[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    
-    const fetchData = async () => {
-      const res = await fetch('/api/auth/session', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      return res.json();
-    };
 
     if (!user) {
-      fetchData().then(session => {
+      const fetchData = userSession()
+      fetchData.then(session => {
         setUser(session);
-        console.log(session.name);
       });
     }
+
     console.log(user);
 
-  }, [user]);
+    if (inventoryLists.length === 0) {
+      getInventoryLists().then((res) => {
+        setInventoryLists(res);
+      });
+    }
+
+    console.log(inventoryLists);
+
+  }, [user, inventoryLists]);
 
   function handleLogout() {
     signOut({ redirect: false }).then(() => {
@@ -43,6 +49,7 @@ export default function Dashboard() {
         <nav className="flex space-x-4">
           <a href="#" className="text-gray-300">Inventory Lists</a>
           <a href="#" className="text-gray-300">Upload</a>
+          <a onClick={() => handleLogout()} className="text-gray-300 cursor-pointer">Sign Out</a>
         </nav>
       </header>
 
@@ -50,12 +57,9 @@ export default function Dashboard() {
       <div className="p-10">
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-2">
-            <button className="bg-green-500 text-white px-4 py-2 rounded flex items-center">
-              <span className="mr-2">▼</span> List 1
-            </button>
-            <button className="bg-green-600 text-white px-4 py-2 rounded">
-              +
-            </button>
+            <div className="flex justify-center items-center rounded">
+              <CreateListFormModule user={user} />
+            </div>
           </div>
           <div className="flex space-x-2">
             <button className="bg-green-500 text-white px-4 py-2 rounded">
@@ -64,36 +68,32 @@ export default function Dashboard() {
             <button className="bg-green-500 text-white px-4 py-2 rounded">
               Sort
             </button>
-            <button className="bg-red-500 text-white px-4 py-2 rounded">
-              Delete
-            </button>
           </div>
         </div>
 
-        <table className="w-full bg-gray-800 rounded">
-          <thead>
-            <tr className="border-b border-gray-700">
+        <table className="w-full bg-gray-800 rounded flex flex-col">
+          <thead className="w-full">
+            <tr className="w-full border border-gray-500 flex justify-between">
               <th className="text-left p-2">Name</th>
-              <th className="text-left p-2">Manufacturer</th>
               <th className="text-left p-2">Description</th>
-              <th className="text-left p-2">Quantity</th>
+              <th className="text-left p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {/* Rows */}
-            <tr className="border-b border-gray-700">
-              <td className="p-2">Item 1</td>
-              <td className="p-2">Brand A</td>
-              <td className="p-2">Description of item 1</td>
-              <td className="p-2">10</td>
-            </tr>
-            <tr className="border-b border-gray-700">
-              <td className="p-2">Item 2</td>
-              <td className="p-2">Brand B</td>
-              <td className="p-2">Description of item 2</td>
-              <td className="p-2">5</td>
-            </tr>
-            {/* Add more rows as needed */}
+            {inventoryLists && inventoryLists.map((list, i) => {
+              return (
+                <tr key={i} className="border-b border-gray-600 flex justify-between">
+                  <td className="p-2">{list.name}</td>
+                  <td className="p-2">{list.description}</td>
+                  <td className="p-2">
+                    <button className="bg-red-500 text-white px-4 py-2 mx-2 rounded">
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              )
+            })
+            }
           </tbody>
         </table>
       </div>

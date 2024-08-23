@@ -67,6 +67,7 @@ model InventoryList {
   id      String  @id @default(uuid())
   name    String
   userId  String
+  description String?
   user    User    @relation(fields: [userId], references: [id])
   items   Item[]
   createdAt     DateTime  @default(now())
@@ -76,6 +77,7 @@ model InventoryList {
 model Item {
   id              String  @id @default(uuid())
   name            String
+  description     String?
   quantity        Int
   inventoryListId String
   inventoryList   InventoryList @relation(fields: [inventoryListId], references: [id])

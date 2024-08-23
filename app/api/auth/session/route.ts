@@ -18,7 +18,7 @@ export async function GET(
     return NextResponse.json({ message: "You must be logged in." }, { status: 401 })
   }
 
-  const user = session.user
+  const user = session?.user
   
   return NextResponse.json(user)
   
