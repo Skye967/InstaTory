@@ -8,21 +8,21 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function POST(req: NextRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest) {
   if (req.method !== 'POST') {
     return NextResponse.json({status: 405, error: 'Method not allowed'});
   }
 
-  // const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-  // if (!session) {
-  //   return NextResponse.json(
-  //     { error: 'User must be authenticated to get inventory lists' },
-  //     { status: 401 }
-  //   );
-  // }
+  if (!session) {
+    return NextResponse.json(
+      { error: 'User must be authenticated to get inventory lists' },
+      { status: 401 }
+    );
+  }
 
-  // const userId = (session.user as { id: string }).id;
+  const userId = (session.user as { id: string }).id;
 
   const { itemName, itemDescription, quantity, inventoryListId } = await req.json();
 
