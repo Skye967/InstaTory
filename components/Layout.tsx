@@ -1,18 +1,16 @@
-import { ReactNode } from 'react';
+"use client";
+import { ReactNode, useState } from 'react';
+import ProfileDropdown from './ProfileDropdown';
 
 export default function Layout({ children }: { children: ReactNode }) {
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-gray-800 text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Your App Name</h1>
-          <nav>
-            <a href="/" className="mr-4">Home</a>
-            <a href="/inventory" className="mr-4">Inventory</a>
-            <a href="/upload">Upload</a>
-          </nav>
+          <h1 className="text-xl font-bold">Instatory</h1>
           <div>
-            <a href="/profile">Profile</a>
+            <ProfileDropdown/>
           </div>
         </div>
       </header>

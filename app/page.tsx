@@ -1,6 +1,14 @@
+"use client";
 import Link from "next/link";
+import { useUser } from "@/context/user";
+import { useEffect } from "react";
+
 
 export default function Home() {
+  const user = useUser();
+
+  useEffect(() => {}, [user]);
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-md p-8 space-y-8">

@@ -1,13 +1,16 @@
 
 import React, { useEffect, useState } from 'react';
-import createInventoryList from "@/util/createInvetoryList";
-import { useUser } from '@/context/user';
+import addItemToInventoryList from '@/util/addItemToInventoryList';
 
-const CreateListFormModule = () => {
+interface Props {
+  listId: string;
+}
+
+const CreateItemFormModule = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [inventoryListName, setInventoryListName] = useState('');
+  const [itemName, setItemName] = useState('');
+  const [quantity, setQuantity] = useState(0);
   const [description, setDescription] = useState('');
-  const user = useUser();
 
   useEffect(() => {}, [isOpen]);
 
@@ -15,26 +18,27 @@ const CreateListFormModule = () => {
     setIsOpen(!isOpen);
   };
 
-  function handleCreateInventoryList() {
-    if (user) {
-      throw new Error("User must be authenticated to create an inventory list");
+  function handleCreateItem() {
+    if (!props.listId) {
+      throw new Error("User must be authenticated to create an item!");
     };
-      createInventoryList(inventoryListName, description, user!.id!).then((res) => {
-        console.log(res);
-      });
+    console.log(props.listId, itemName, description, quantity)
+    addItemToInventoryList(props.listId, itemName, description, quantity).then((res) => {
+      console.log(res);
+    });
       togglePopup();
   }
 
   return (
     <div className=" bg-green-600rounded">
       <button onClick={togglePopup} className="px-4 py-2 bg-green-600 text-white rounded">
-        Creat new Inventory List
+        Creat New Item
       </button>
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow-lg w-96">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-black">Create Inventory List</h2>
+              <h2 className="text-xl font-bold text-black">Create Item</h2>
               <button onClick={togglePopup} className="text-gray-500 hover:text-gray-700">
                 &times;
               </button>
@@ -47,8 +51,8 @@ const CreateListFormModule = () => {
                 id="name"
                 type="text"
                 placeholder="Name"
-                value={inventoryListName}
-                onChange={(e) => setInventoryListName(e.target.value)}
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
@@ -65,8 +69,21 @@ const CreateListFormModule = () => {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
+                Quantity
+              </label>
+              <input
+                id="quantity"
+                type="number"
+                placeholder="Quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(parseInt(e.target.value))}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
             <div className='flex justify-between'>
-              <button onClick={handleCreateInventoryList} className="px-4 py-2 bg-green-500 text-white rounded">
+              <button onClick={handleCreateItem} className="px-4 py-2 bg-green-500 text-white rounded">
                 Create
               </button>
               <button onClick={togglePopup} className="px-4 py-2 bg-red-500 text-white rounded">
@@ -80,4 +97,4 @@ const CreateListFormModule = () => {
   );
 };
 
-export default CreateListFormModule
+export default CreateItemFormModule

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
+import Layout from "@/components/Layout";
+import Provider from "@/context/user";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,10 +17,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en">
       <body className="relative h-screen flex flex-col bg-gray-900">
-        <header className="bg-gray-800 text-white p-4 w-full">
+        <Provider>
+          <Layout>{children}</Layout>
+        </Provider>
+
+        {/* <header className="bg-gray-800 text-white p-4 w-full">
+          <div className="container mx-auto flex justify-between items-center">
+            <h1 className="text-xl font-bold">Instatory</h1>
+            <div>
+              <Link href="/profile">Profile</Link>
+            </div>
+          </div>
+        {/* <header className="bg-gray-800 text-white p-4 w-full">
           <div className="container mx-auto flex justify-between items-center">
             <h1 className="text-xl font-bold">Instatory</h1>
             <div>
@@ -32,7 +46,7 @@ export default function RootLayout({
             <p>&copy; 2024 Instatory. All rights reserved.</p>
             <Link href="/terms">Terms of Service</Link>
           </div>
-        </footer>
+        </footer> */}
       </body>
     </html>
   );
