@@ -7,26 +7,19 @@ import getInventoryLists from "@/util/getInventoryLists";
 
 export default function Dashboard() {
   const [inventoryLists, setInventoryLists] = useState<{ description: string; name: string }[] | null>(null);
-  const router = useRouter();
+
+  const fetchInventoryLists = async () => {
+    const lists = await getInventoryLists();
+    setInventoryLists(lists);
+  }
 
   useEffect(() => {
-
-    const fetchInventoryLists = async () => {
-      const lists = await getInventoryLists();
-      setInventoryLists(lists);
-    }
 
     if (!inventoryLists) {
         fetchInventoryLists();
     }
 
   }, [inventoryLists]);
-
-  function handleLogout() {
-    signOut({ redirect: false }).then(() => {
-      router.push("/");
-    });
-  }
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white">
@@ -43,7 +36,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-2">
             <div className="flex justify-center items-center rounded">
-              <CreateListFormModule/>
+              <CreateListFormModule refreshList={fetchInventoryLists} setList={setInventoryLists}/>
             </div>
           </div>
           <div className="flex space-x-2">

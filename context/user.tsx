@@ -13,6 +13,8 @@ const Context = createContext<{
   name: string | null | undefined;
   picture: string | null | undefined;
   singOut: () => Promise<void>;
+  getCurrentUser: () => Promise<any>;
+
 } | null>(null);
 
 const Provider = ({ children }: { children: React.ReactNode }) => {
@@ -45,6 +47,8 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
     isUser();
   }, [])
 
+
+
   const singOut = async () => {
     signOut({ redirect: false }).then(() => {
       router.push("/");
@@ -60,7 +64,7 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
     setPicture(null);
   }
 
-  const exposed = { user, id, email, name, picture, singOut };
+  const exposed = { user, id, email, name, picture, singOut, getCurrentUser };
 
   return <Context.Provider value={exposed}>{children}</Context.Provider>
 }

@@ -3,12 +3,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/user";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const user = useUser();
 
   const handleGoogleSignIn = () => {
     signIn("google");
@@ -26,10 +28,13 @@ export default function LoginPage() {
 
     if (res?.ok) {
       console.log("User logged in successfully");
+      user?.getCurrentUser();
       router.push("/auth/dashboard");
     } else {
       setError("Login failed. Please check your credentials and try again.");
     }
+
+
   };
 
   return (

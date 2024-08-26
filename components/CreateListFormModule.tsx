@@ -1,9 +1,17 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import createInventoryList from "@/util/createInvetoryList";
 import { useUser } from '@/context/user';
 
-const CreateListFormModule = () => {
+type Props = {
+  refreshList: () => Promise<void>
+  setList: (value: SetStateAction<{
+    description: string;
+    name: string;
+}[] | null >) => void
+}
+
+const CreateListFormModule = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inventoryListName, setInventoryListName] = useState('');
   const [description, setDescription] = useState('');
@@ -16,13 +24,16 @@ const CreateListFormModule = () => {
   };
 
   function handleCreateInventoryList() {
-    if (user) {
+    if (!user) {
       throw new Error("User must be authenticated to create an inventory list");
     };
       createInventoryList(inventoryListName, description, user!.id!).then((res) => {
         console.log(res);
       });
       togglePopup();
+      props.refreshList().then((newList) => {
+        props.setList(newList!);
+      });
   }
 
   return (

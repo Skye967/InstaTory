@@ -1,6 +1,6 @@
-
-import React, { use, useEffect, useState } from 'react';
-import { signOut } from "next-auth/react";
+"use client";
+import React, { useState, useEffect, use } from 'react';
+import { signOut, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { useUser } from '@/context/user';
@@ -10,21 +10,43 @@ const ProfileDropdown = () => {
   const user = useUser();
   const router = useRouter();
 
-  useEffect(() => {}, [user]);
+  const handleMouseEnter = () => setIsOpen(true);
+  const handleMouseLeave = () => setIsOpen(false);
 
-  const handleMouseEnter = () => {
-    setIsOpen(true);
+  const handleLogout = () => {
+    user?.singOut();
   };
 
-  const handleMouseLeave = () => {
-    setIsOpen(false);
+  const isLoggegIn = () => {
+    if (user && user.id) {
+      return (
+        <>
+          <li className="px-4 py-2 hover:bg-gray-700">
+              Profile
+          </li>
+          <li className="px-4 py-2 hover:bg-gray-700 border-b border-gray-400">
+            <button onClick={handleLogout}>Logout</button>
+          </li>
+        </>
+      );
+    } else {
+      return (
+        <>
+              <li className="px-4 py-2 hover:bg-gray-700 border-b border-gray-400">
+                <Link href="/auth/login">
+                  Login
+                </Link>
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-700 border-b border-gray-400">
+                <Link href="/auth/signup">
+                  Sign Up
+                </Link>
+              </li>
+            </>
+      )
+    }
   };
 
-  function handleLogout() {
-    signOut({ redirect: false }).then(() => {
-      router.push("/");
-    });
-  }
 
   return (
     <div
@@ -32,39 +54,38 @@ const ProfileDropdown = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button
-        className="border border-gray-500 bg-gray-900 w-full px-4 py-2 text-left focus:outline-none"
-      >
-        {user?.name ? "Profile, " + user.name : "Profile"}
-        <span className="float-right">
-          ▼
-        </span>
+      <button className="border border-gray-500 bg-gray-900 w-full px-4 py-2 text-left focus:outline-none">
+        {user?.name ? `Profile, ${user.name}` : "Profile"}
+        <span className="float-right">▼</span>
       </button>
       {isOpen && (
-        <ul className="absolute z-10 w-full border-b border-gray-500 bg-gray-900 shadow-lg">
-          {user?.name ?
-            (<li
-              onClick={handleLogout}
-              className="px-4 py-2 hover:bg-gray-400 border-b border-gray-500 cursor-pointer"
-            >
-              Logout
-            </li>)
-            : (
-              <div className='flex flex-col'>
-                <Link href="/auth/login"
-                  className="px-4 py-2 hover:bg-gray-400 border-b border-gray-500 cursor-pointer"
-                >
+        <ul className="absolute z-10 w-full border border-gray-500 bg-gray-900 shadow-lg">
+          {isLoggegIn()}
+          {/* {session.user ? (
+            <>
+              <li className="px-4 py-2 hover:bg-gray-700">
+                <Link href="/profile">
+                  Profile
+                </Link>
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-700">
+                <button onClick={handleLogout}>Logout</button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="px-4 py-2 hover:bg-gray-700">
+                <Link href="/auth/signin">
                   Login
                 </Link>
-                <Link href="/auth/signup"
-                  className="px-4 py-2 hover:bg-gray-400 border-b border-gray-500 cursor-pointer"
-                >
-                  SignUp
+              </li>
+              <li className="px-4 py-2 hover:bg-gray-700">
+                <Link href="/auth/signup">
+                  Sign Up
                 </Link>
-              </div>
-            )
-          }
-
+              </li>
+            </>
+          )} */}
         </ul>
       )}
     </div>
