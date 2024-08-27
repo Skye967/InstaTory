@@ -7,11 +7,11 @@ export default async function getInventoryListItems(params: { inventoryListId: s
     },
   });
   
-  const items = await res.json();
+  const list = await res.json();
 
   if(!res.ok) {
-    throw new Error(items.error);
+    throw new Error(list.error);
   }
 
-  return items;
+  return list;
 }

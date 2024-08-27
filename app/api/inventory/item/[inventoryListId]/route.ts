@@ -20,8 +20,6 @@ export async function GET(
       );
     }
 
-    const userId = (session.user as { id: string }).id;
-
     const { inventoryListId } = params;
 
     // Fetch all items in the inventory list

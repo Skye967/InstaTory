@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import getInventoryListItems from "@/util/getInventoryListItems";
 import getInventoryListById from "@/util/getInventoryListById";
 import CreateItemFormModule from "@/components/CreateItemFormModule";
+import deleteItem from "@/util/deleteItem";
+import EditInventoryListFormModule from "@/components/EditInventoryListFormModule";
 
 type InventoryItem = {
   id: string;
@@ -18,42 +20,49 @@ type InventoryItem = {
 type InventoryList = {
   id: string;
   name: string;
-  description?: string;
+  description: string;
 };
 
 export default function InventoryListPage() {
-  const [items, setItems] = useState<InventoryItem[] | null>(null);
-  const [inventoryList, setInventoryList] = useState<InventoryList | null>(null);
+  const [items, setItems] = useState<InventoryItem[]>([]);
+  const [inventoryList, setInventoryList] = useState<InventoryList>({ id: "", name: "", description: "" });
   const router = useRouter();
   const pathName = usePathname();
   const path = pathName.split("/")[4];
 
+  const fetchInventoryListItems = async () => {
+    const items = await getInventoryListItems({ inventoryListId: path });
+    setItems(items);
+  };
+
+  const fetchInventoryList = async () => {
+    const list = await getInventoryListById({ inventoryListId: path });
+    setInventoryList(list);
+  };
+
   useEffect(() => {
-    if (!items) {
-      getInventoryListItems({inventoryListId: path}).then((res) => {
-        setItems(res);
-      });
+    if (!items.length) {
+      fetchInventoryListItems();
     }
 
-    if(!inventoryList){
-      getInventoryListById({inventoryListId: path}).then((res) => {
-        setInventoryList(res);
-      });
+    if (!inventoryList || !inventoryList.id) {
+      fetchInventoryList();
     }
 
-    console.log(inventoryList)
-
-  }, [items]);
+  }, [items, inventoryList]);
 
   function handleDelete(itemId: string) {
     // Handle deletion logic here
-    if(!items) return;
-    setItems(items.filter(item => item.id !== itemId));
+    if (itemId && items) {
+      deleteItem(itemId)
+        .then(() => {
+          fetchInventoryListItems();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   }
-
-  function handleCreateItem() {
-    // Handle creation logic here
-  };
 
   return (
     <div className="flex flex-col h-full bg-gray-900 text-white">
@@ -68,13 +77,14 @@ export default function InventoryListPage() {
 
       {/* Main Content */}
       <div className="p-10">
-        <h1 className="text-2xl font-bold mb-4">{inventoryList?.name || "List" }</h1>
-        <h6 className="text-lg mb-4">{inventoryList?.description || "" }</h6>
+        <h1 className="text-2xl font-bold mb-4">{inventoryList?.name || "List"}</h1>
+        <h6 className="text-lg mb-4">{inventoryList?.description || ""}</h6>
 
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center space-x-2">
             <div className="flex justify-center items-center rounded">
-              <CreateItemFormModule listId={path} />
+              <CreateItemFormModule listId={path} setItems={setItems} refreshItems={fetchInventoryListItems} />
+              <EditInventoryListFormModule listId={path} refreshList={fetchInventoryList} setList={setInventoryList} list={inventoryList} />
             </div>
           </div>
           <div className="flex space-x-2">

@@ -1,9 +1,19 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import addItemToInventoryList from '@/util/addItemToInventoryList';
+import getInventoryListItems from '@/util/getInventoryListItems';
+
+type InventoryItem = {
+  id: string;
+  name: string;
+  description?: string;
+  quantity: number;
+};
 
 interface Props {
   listId: string;
+  refreshItems: () => Promise<void>;
+  setItems: Dispatch<SetStateAction<InventoryItem[]>>
 }
 
 const CreateItemFormModule = (props: Props) => {
@@ -23,10 +33,18 @@ const CreateItemFormModule = (props: Props) => {
       throw new Error("User must be authenticated to create an item!");
     };
     console.log(props.listId, itemName, description, quantity)
+    if (!itemName || !quantity) {
+      throw new Error("Missing required fields");
+    }
     addItemToInventoryList(props.listId, itemName, description, quantity).then((res) => {
       console.log(res);
     });
       togglePopup();
+      console.log('refreshing items')
+      props.refreshItems().then((newItems) => {
+        props.setItems(newItems!);
+      });
+      // props.setItems(items);
   }
 
   return (

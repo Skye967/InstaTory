@@ -21,9 +21,6 @@ const ProfileDropdown = () => {
     if (user && user.id) {
       return (
         <>
-          <li className="px-4 py-2 hover:bg-gray-700">
-              Profile
-          </li>
           <li className="px-4 py-2 hover:bg-gray-700 border-b border-gray-400">
             <button onClick={handleLogout}>Logout</button>
           </li>
@@ -61,31 +58,6 @@ const ProfileDropdown = () => {
       {isOpen && (
         <ul className="absolute z-10 w-full border border-gray-500 bg-gray-900 shadow-lg">
           {isLoggegIn()}
-          {/* {session.user ? (
-            <>
-              <li className="px-4 py-2 hover:bg-gray-700">
-                <Link href="/profile">
-                  Profile
-                </Link>
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-700">
-                <button onClick={handleLogout}>Logout</button>
-              </li>
-            </>
-          ) : (
-            <>
-              <li className="px-4 py-2 hover:bg-gray-700">
-                <Link href="/auth/signin">
-                  Login
-                </Link>
-              </li>
-              <li className="px-4 py-2 hover:bg-gray-700">
-                <Link href="/auth/signup">
-                  Sign Up
-                </Link>
-              </li>
-            </>
-          )} */}
         </ul>
       )}
     </div>
